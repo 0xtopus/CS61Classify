@@ -24,9 +24,10 @@ dot:
     bge x0, a4, stride_error
 
     # Prologue
-    addi sp, sp, -8
-    sw s0, 4(sp)
-    sw s1, 0(sp)
+    addi sp, sp, -12
+    sw s0, 8(sp)
+    sw s1, 4(sp)
+    sw s2, 0(sp)
     
     # Init registers
     add t0, x0, a0  # Set t0 as address of elements of arr0
@@ -34,36 +35,43 @@ dot:
     add t2, x0, x0  # Set t2 as count of arr0
     add t3, x0, x0  # Set t3 as count of arr1
     lw t4, 0(t0)    # Set t4 as the value of arr0[0]
-    lw t5, 0(t0)    # Set t5 as the value of arr1[0]
+    lw t5, 0(t1)    # Set t5 as the value of arr1[0]
     
     mul s0, t4, t5  # Set s0 as sum of product results
     addi s1, x0, 4  # Set s1 as length of a word
+    addi s2, x0, 1  # Set s2 as count
 loop_start:    
-    bge  t2, a2, loop_end
-    bge  t3, a2, loop_end
-        
-    add t2, t2, a3  # Increase arr0 count by stride
+    # bge t2, a2, loop_end
+    # bge t3, a2, loop_end
+    bge s2, a2, loop_end
+    # li s2, 3
+    # bne t2, s2, after_breakpoint
+    # ebreak
+# after_breakpoint:    
+    add t2, t2, a3  # Increase arr0 count by a stride
     mul t6, t2, s1  # Calculate offset of arr0
-    add t0, t0, t6  # Get next address of arr0
+    add t0, a0, t6  # Get next address of arr0
     lw t4, 0(t0)    # Get next value of arr0
     
-    add t3, t3, a4  # Increase arr1 count by stride
+    add t3, t3, a4  # Increase arr1 count by a stride
     mul t6, t3, s1  # Calculate offset of arr1
-    add t1, t1, t6  # Get next address of arr1
-    lw t5, 0(t0)    # Get next value of arr1
+    add t1, a1, t6  # Get next address of arr1
+    lw t5, 0(t1)    # Get next value of arr1
     
     mul t6, t4, t5  # Get next product
     add s0, s0, t6  # Add next product to sum
-        
+    
+    addi s2, s2, 1  # Add count by 1
     j loop_start
 
 loop_end:
     add a0, s0, x0
 
     # Epilogue
-    lw s0, 4(sp)
-    lw s1, 0(sp)
-    addi sp, sp, 8
+    lw s0, 8(sp)
+    lw s1, 4(sp)
+    lw s2, 0(sp)
+    addi sp, sp, 12
     
     jr ra
 
