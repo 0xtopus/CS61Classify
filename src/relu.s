@@ -16,7 +16,7 @@ relu:
     # Prologue
 
     # Init registers
-    lw t0, 0(a0)    # Set t0 as value of the first element
+    
     add t1, x0, x0  # Set t1 as count
     mv t2, a0       # Set t2 as address of the first element
     
@@ -24,6 +24,7 @@ relu:
     bgt x0, a1, Error
     
 loop_start:
+    lw t0, 0(t2)   # Set t0 to value of the next element
     bge t0, x0, loop_continue   # If bigger or equal to zero, continue
     
     sw x0, 0(t2)    # Replace the negative element with zero
@@ -31,7 +32,7 @@ loop_start:
 loop_continue:
     addi t1, t1, 1  # Increase t1 by 1
     addi t2, t2, 4  # Set t2 to address of the next element
-    lw t0 , 0(t2)   # Set t0 to value of the next element
+    
     blt t1, a1, loop_start  # Loop all elements
 
 loop_end:
